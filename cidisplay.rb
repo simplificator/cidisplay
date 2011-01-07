@@ -19,7 +19,7 @@ class CiDisplay
     jobs = fetch_failing_jobs
 
     board = open_board(@device)
-    if jobs.any?
+    if jobs.empty?
       message = Rdis::Message.new(:method => Rdis::DisplayMethodElement::LEVEL_3_NORMAL,
                                   :leading => Rdis::LeadingElement::HOLD,
                                   :lagging => Rdis::LaggingElement::HOLD)
