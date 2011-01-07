@@ -26,6 +26,7 @@ class CiDisplay
       message.add(Rdis::ColorElement::GREEN)
       message.add("ALL SYSTEMS GO")
       board.deliver(message)
+      sleep(3)
     else
       jobs.each do |job|
         message = Rdis::Message.new(:method => Rdis::DisplayMethodElement::LEVEL_3_NORMAL,
