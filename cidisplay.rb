@@ -37,36 +37,32 @@ class CiDisplay
   end
 
   def build_message(jobs)
-    message = Rdis::Message.new(:method => Rdis::DisplayMethodElement::LEVEL_4_NORMAL)
+    message = Rdis::Message.new(:method => Rdis::DisplayMethodElement::LEVEL_3_NORMAL)
     jobs.each_with_index do |job, index|
       case job.color
       when 'red'
-        message.add(Rdis::ColorElement::RED)
-        add_job_name(message, job, index)
+        add_job_name(message, job, index, Rdis::ColorElement::RED)
       when 'red_anime'
-        message.add(Rdis::ColorElement::DIM_RED)
-        add_job_name(message, job, index)
+        add_job_name(message, job, index, Rdis::ColorElement::DIM_RED)
       when 'blue'
-        message.add(Rdis::ColorElement::GREEN)
-        add_job_name(message, job, index)
+        add_job_name(message, job, index, Rdis::ColorElement::GREEN)
       when 'blue_anime'
-        message.add(Rdis::ColorElement::DIM_GREEN)
-        add_job_name(message, job, index)
+        add_job_name(message, job, index, Rdis::ColorElement::DIM_RED)
       when 'grey'
-        message.add(Rdis::ColorElement::YELLOW)
-        add_job_name(message, job, index)
+        add_job_name(message, job, index, Rdis::ColorElement::YELLOW)
       else
-        message.add(Rdis::ColorElement::RAINBOW)
-        add_job_name(message, job, index)
+        add_job_name(message, job, index, Rdis::ColorElement::RAINBOW)
       end
     end
     message
   end
 
-  def add_job_name(message, job, index)
+  def add_job_name(message, job, index, color)
     if index > 0
+      message.add(Rdis::ColorElement::RAINBOW)
       message.add " | "
     end
+    message.add(color)
     message.add(job.name)
   end
 end
