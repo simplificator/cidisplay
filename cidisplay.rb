@@ -31,12 +31,13 @@ class CiDisplay
       jobs.each do |job|
         message = Rdis::Message.new(:method => Rdis::DisplayMethodElement::LEVEL_3_NORMAL,
                                     :leading => Rdis::LeadingElement::CURTAIN_UP,
-                                    :lagging => Rdis::LaggingElement::CURTAIN_DOWN)
+                                    :lagging => Rdis::LaggingElement::HOLD)
         message.add(Rdis::ColorElement::RED)
         message.add(job.name.upcase)
         board.deliver(message)
         sleep(3)
       end
+      board.deliver(Rdis::DeleteAll::INSTANCE)
     end
 
 
