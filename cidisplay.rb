@@ -16,7 +16,24 @@ class CiDisplay
 
 
   def publish
-    jobs = fetch_sorted_jobs
+    jobs = fetch_failing_jobs
+    if jobs.any?
+      message = Rdis::Message.new(:method => Rdis::DisplayMethodElement::LEVEL_3_NORMAL,
+                                  :leading => RDis::LeadingElement::HOLD,
+                                  :lagging => RDis::LaggingElement::HOLD)
+      message.add(Rdis::ColorElement::GREEN)
+      message.add("ALL SYSTEMS GO")
+    else
+      jobs.each do |job|
+        message = Rdis::Message.new(:method => Rdis::DisplayMethodElement::LEVEL_3_NORMAL,
+                                    :leading => RDis::LeadingElement::CURTAIN_UP,
+                                    :lagging => RDis::LaggingElement::CURTAIN_DOWN)
+        message.add(Rdis::ColorElement::RED)
+        message.add(job.name.upcase)
+      end
+    end
+
+
     board = open_board(@device)
     board.deliver build_message(jobs)
   end
@@ -27,6 +44,14 @@ class CiDisplay
       Hudson::Job.new(name)
     end.sort() do |a, b|
       (COLORS[a.color] || 10) <=> (COLORS[b.color] || 10)
+    end
+  end
+
+  def fetch_failing_jobs
+    jobs = Hudson::Job.list.map do |name|
+      Hudson::Job.new(name)
+    end.select do |job|
+      job.color != 'blue' && job.color != 'blue_anime'
     end
   end
 
@@ -44,12 +69,13 @@ class CiDisplay
         add_job_name(message, job, index, Rdis::ColorElement::RED)
       when 'red_anime'
         add_job_name(message, job, index, Rdis::ColorElement::DIM_RED)
-      when 'blue'
-        add_job_name(message, job, index, Rdis::ColorElement::GREEN)
-      when 'blue_anime'
-        add_job_name(message, job, index, Rdis::ColorElement::DIM_RED)
-      when 'grey'
-        add_job_name(message, job, index, Rdis::ColorElement::RAINBOW)
+      # when 'blue'
+      #         add_job_name(message, job, index, Rdis::ColorElement::GREEN)
+      #       when 'blue_anime'
+      #         add_job_name(message, job, index, Rdis::ColorElement::DIM_RED)
+      #       when 'grey'
+      #         add_job_name(message, job, index, Rdis::ColorElement::RAINBOW)
+      #       else
       else
         add_job_name(message, job, index, Rdis::ColorElement::RAINBOW)
       end
