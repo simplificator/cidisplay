@@ -49,7 +49,7 @@ class CiDisplay
       when 'blue_anime'
         add_job_name(message, job, index, Rdis::ColorElement::DIM_RED)
       when 'grey'
-        add_job_name(message, job, index, Rdis::ColorElement::YELLOW)
+        add_job_name(message, job, index, Rdis::ColorElement::RAINBOW)
       else
         add_job_name(message, job, index, Rdis::ColorElement::RAINBOW)
       end
