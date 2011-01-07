@@ -37,7 +37,7 @@ class CiDisplay
   end
 
   def build_message(jobs)
-    message = Rdis::Message.new(:method => Rdis::DisplayMethodElement::LEVEL_1_NORMAL)
+    message = Rdis::Message.new(:method => Rdis::DisplayMethodElement::LEVEL_4_NORMAL)
     jobs.each_with_index do |job, index|
       case job.color
       when 'red'
