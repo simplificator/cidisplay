@@ -17,12 +17,15 @@ class CiDisplay
 
   def publish
     jobs = fetch_failing_jobs
+
+    board = open_board(@device)
     if jobs.any?
       message = Rdis::Message.new(:method => Rdis::DisplayMethodElement::LEVEL_3_NORMAL,
                                   :leading => Rdis::LeadingElement::HOLD,
                                   :lagging => Rdis::LaggingElement::HOLD)
       message.add(Rdis::ColorElement::GREEN)
       message.add("ALL SYSTEMS GO")
+      board.deliver(message)
     else
       jobs.each do |job|
         message = Rdis::Message.new(:method => Rdis::DisplayMethodElement::LEVEL_3_NORMAL,
@@ -30,12 +33,12 @@ class CiDisplay
                                     :lagging => Rdis::LaggingElement::CURTAIN_DOWN)
         message.add(Rdis::ColorElement::RED)
         message.add(job.name.upcase)
+        board.deliver(message)
+        sleep(3)
       end
     end
 
 
-    board = open_board(@device)
-    board.deliver build_message(jobs)
   end
 
   private
