@@ -59,11 +59,11 @@ class CiDisplay
 
   def add_job_name(message, job, index, color)
     if index > 0
-      message.add(Rdis::ColorElement::RAINBOW)
+      message.add(Rdis::ColorElement::LIME)
       message.add " | "
     end
     message.add(color)
-    message.add(job.name)
+    message.add(job.name.upcase)
   end
 end
 
