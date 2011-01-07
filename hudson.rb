@@ -6,7 +6,6 @@ require 'serialport'
 
 credentials = YAML.load_file(File.dirname(__FILE__) + '/hudson.yml')
 credentials.each do |key, value|
-  puts "#{key} => #{value}"
   Hudson[key.to_sym] = value
 end
 
@@ -30,7 +29,7 @@ def open_board()
 end
 def build_message(jobs)
   message = Rdis::Message.new(:method => Rdis::DisplayMethodElement::LEVEL_1_NORMAL)
-  jobs.each_with_index do |job|
+  jobs.each_with_index do |job, index|
     case job.color
     when 'red'
       message.add(Rdis::ColorElement::RED)
