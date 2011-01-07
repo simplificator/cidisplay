@@ -37,7 +37,11 @@ class CiDisplay
         board.deliver(message)
         sleep(3)
       end
-      board.deliver(Rdis::DeleteAll::INSTANCE)
+      message = Rdis::Message.new(:method => Rdis::DisplayMethodElement::LEVEL_3_NORMAL,
+                                    :leading => Rdis::LeadingElement::CURTAIN_UP,
+                                    :lagging => Rdis::LaggingElement::HOLD)
+      message.add("")
+      board.deliver(message)
     end
 
 
