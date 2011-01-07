@@ -19,15 +19,15 @@ class CiDisplay
     jobs = fetch_failing_jobs
     if jobs.any?
       message = Rdis::Message.new(:method => Rdis::DisplayMethodElement::LEVEL_3_NORMAL,
-                                  :leading => RDis::LeadingElement::HOLD,
-                                  :lagging => RDis::LaggingElement::HOLD)
+                                  :leading => Rdis::LeadingElement::HOLD,
+                                  :lagging => Rdis::LaggingElement::HOLD)
       message.add(Rdis::ColorElement::GREEN)
       message.add("ALL SYSTEMS GO")
     else
       jobs.each do |job|
         message = Rdis::Message.new(:method => Rdis::DisplayMethodElement::LEVEL_3_NORMAL,
-                                    :leading => RDis::LeadingElement::CURTAIN_UP,
-                                    :lagging => RDis::LaggingElement::CURTAIN_DOWN)
+                                    :leading => Rdis::LeadingElement::CURTAIN_UP,
+                                    :lagging => Rdis::LaggingElement::CURTAIN_DOWN)
         message.add(Rdis::ColorElement::RED)
         message.add(job.name.upcase)
       end
@@ -39,14 +39,6 @@ class CiDisplay
   end
 
   private
-  def fetch_sorted_jobs
-    jobs = Hudson::Job.list.map do |name|
-      Hudson::Job.new(name)
-    end.sort() do |a, b|
-      (COLORS[a.color] || 10) <=> (COLORS[b.color] || 10)
-    end
-  end
-
   def fetch_failing_jobs
     jobs = Hudson::Job.list.map do |name|
       Hudson::Job.new(name)
@@ -61,36 +53,4 @@ class CiDisplay
     board
   end
 
-  def build_message(jobs)
-    message = Rdis::Message.new(:method => Rdis::DisplayMethodElement::LEVEL_3_NORMAL)
-    jobs.each_with_index do |job, index|
-      case job.color
-      when 'red'
-        add_job_name(message, job, index, Rdis::ColorElement::RED)
-      when 'red_anime'
-        add_job_name(message, job, index, Rdis::ColorElement::DIM_RED)
-      # when 'blue'
-      #         add_job_name(message, job, index, Rdis::ColorElement::GREEN)
-      #       when 'blue_anime'
-      #         add_job_name(message, job, index, Rdis::ColorElement::DIM_RED)
-      #       when 'grey'
-      #         add_job_name(message, job, index, Rdis::ColorElement::RAINBOW)
-      #       else
-      else
-        add_job_name(message, job, index, Rdis::ColorElement::RAINBOW)
-      end
-    end
-    message
-  end
-
-  def add_job_name(message, job, index, color)
-    if index > 0
-      message.add(Rdis::ColorElement::LIME)
-      message.add " | "
-    end
-    message.add(color)
-    message.add(job.name.upcase)
-  end
 end
-
-
