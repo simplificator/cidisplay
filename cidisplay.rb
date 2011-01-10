@@ -28,6 +28,7 @@ class CiDisplay
       board.deliver(ok_message)
       @runner = nil
     else
+      puts ""
       @runner = Thread.new(board, jobs) do |board, jobs|
         while tru
         jobs.each do |job|
@@ -38,6 +39,8 @@ class CiDisplay
         puts "next run"
         end
       end
+      puts "starting runner"
+      @runner.start
     end
   end
 
