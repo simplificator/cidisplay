@@ -23,7 +23,7 @@ class CiDisplay
       @runner = nil
     else
       jobs.each do |job|
-        board.deliver(failure_message)
+        board.deliver(failure_message(job))
       end
     end
   end
