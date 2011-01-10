@@ -12,32 +12,18 @@ class CiDisplay
       Hudson[key.to_sym] = value
     end
     @device = device
-    @runner = nil
   end
 
 
   def publish
     jobs = fetch_failing_jobs
-    if @runner
-      puts "Next run... stop thread"
-      @runner.exit
-    end
-
     board = open_board(@device)
     if jobs.empty?
       board.deliver(ok_message)
       @runner = nil
     else
-      puts "starting runner"
-      @runner = Thread.new(board, jobs) do |board, jobs|
-        while true
-        jobs.each do |job|
-          puts "thread delivers ...."
-          board.deliver(failure_message)
-          sleep 2
-        end
-        puts "next run"
-        end
+      jobs.each do |job|
+        board.deliver(failure_message)
       end
     end
   end
