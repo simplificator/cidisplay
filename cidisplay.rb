@@ -12,42 +12,48 @@ class CiDisplay
       Hudson[key.to_sym] = value
     end
     @device = device
+    @runner = nil
   end
 
 
   def publish
     jobs = fetch_failing_jobs
+    @runner.stop if @runner
 
     board = open_board(@device)
+
     if jobs.empty?
-      message = Rdis::Message.new(:method => Rdis::DisplayMethodElement::LEVEL_3_NORMAL,
-                                  :leading => Rdis::LeadingElement::HOLD,
-                                  :lagging => Rdis::LaggingElement::HOLD)
-      message.add(Rdis::ColorElement::GREEN)
-      message.add("ALL SYSTEMS GO")
-      board.deliver(message)
-      sleep(3)
+      board.deliver(ok_message)
+      @runner = nil
     else
-      jobs.each do |job|
-        message = Rdis::Message.new(:method => Rdis::DisplayMethodElement::LEVEL_3_NORMAL,
-                                    :leading => Rdis::LeadingElement::CURTAIN_UP,
-                                    :lagging => Rdis::LaggingElement::HOLD)
-        message.add(Rdis::ColorElement::RED)
-        message.add(job.name.upcase)
-        board.deliver(message)
-        sleep(3)
+      @runner = Thread.new(board, jobs) do |board, jobs|
+        jobs.each do |job|
+          board.deliver(failure_message)
+          sleep 2
+        end
       end
-      message = Rdis::Message.new(:method => Rdis::DisplayMethodElement::LEVEL_3_NORMAL,
-                                    :leading => Rdis::LeadingElement::CURTAIN_UP,
-                                    :lagging => Rdis::LaggingElement::HOLD)
-      message.add("")
-      board.deliver(message)
     end
-
-
   end
 
   private
+
+  def ok_message
+    message = Rdis::Message.new(:method => Rdis::DisplayMethodElement::LEVEL_3_NORMAL,
+                                :leading => Rdis::LeadingElement::HOLD,
+                                :lagging => Rdis::LaggingElement::HOLD)
+    message.add(Rdis::ColorElement::GREEN)
+    message.add("ALL SYSTEMS GO")
+    message
+  end
+
+  def failure_message(job)
+    message = Rdis::Message.new(:method => Rdis::DisplayMethodElement::LEVEL_3_NORMAL,
+                                :leading => Rdis::LeadingElement::CURTAIN_UP,
+                                :lagging => Rdis::LaggingElement::HOLD)
+    message.add(Rdis::ColorElement::RED)
+    message.add(job.name.upcase)
+    message
+  end
   def fetch_failing_jobs
     jobs = Hudson::Job.list.map do |name|
       Hudson::Job.new(name)
