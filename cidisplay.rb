@@ -18,18 +18,24 @@ class CiDisplay
 
   def publish
     jobs = fetch_failing_jobs
-    @runner.stop if @runner
+    if @runner
+      puts "Next run... stop thread"
+      @runner.exit
+    end
 
     board = open_board(@device)
-
     if jobs.empty?
       board.deliver(ok_message)
       @runner = nil
     else
       @runner = Thread.new(board, jobs) do |board, jobs|
+        while tru
         jobs.each do |job|
+          puts "thread delivers ...."
           board.deliver(failure_message)
           sleep 2
+        end
+        puts "next run"
         end
       end
     end
