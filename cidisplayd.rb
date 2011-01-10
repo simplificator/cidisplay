@@ -9,4 +9,5 @@ ci_display = CiDisplay.new(credentials, device)
 
 Daemons.run_proc('cidsiplay.rb', :log_output => true, :multiple => false, :monitor => true) do
   ci_display.publish
+  puts "Published"
 end

@@ -20,10 +20,11 @@ class CiDisplay
     board = open_board(@device)
     if jobs.empty?
       board.deliver(ok_message)
-      @runner = nil
+      sleep 10
     else
       jobs.each do |job|
         board.deliver(failure_message(job))
+        sleep 5
       end
     end
   end
