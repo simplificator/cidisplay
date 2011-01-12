@@ -19,6 +19,7 @@ class CiDisplay
     board = open_board(@device)
     if jobs.empty?
       board.deliver(ok_message)
+      sleep 30
     else
       jobs.each do |job|
         board.deliver(failure_message(job))
@@ -29,11 +30,12 @@ class CiDisplay
   private
 
   def ok_message
+    texts = ['HOOOORAY', "IT JUST WORKS", "UP AND RUNNING", "SYSTEMS READY", "TESTING ROCKS"]
     message = Rdis::Message.new(:method => Rdis::DisplayMethodElement::LEVEL_3_NORMAL,
                                 :leading => Rdis::LeadingElement::CURTAIN_UP,
                                 :lagging => Rdis::LaggingElement::HOLD)
     message.add(Rdis::ColorElement::GREEN)
-    message.add("HOORAY")
+    message.add(text.shuffle.first)
     message
   end
 
