@@ -30,12 +30,13 @@ class CiDisplay
   private
 
   def ok_message
-    texts = ['HOOOORAY', "IT JUST WORKS", "UP & RUNNING", "SYSTEMS READY", "TESTING ROCKS"]
+    texts = ['HOORAY', 'WORKING', 'RUNNING', 'READY', 'SOLID', 'NICE' ]
     message = Rdis::Message.new(:method => Rdis::DisplayMethodElement::LEVEL_3_NORMAL,
                                 :leading => Rdis::LeadingElement::CURTAIN_UP,
                                 :lagging => Rdis::LaggingElement::HOLD)
     message.add(Rdis::ColorElement::GREEN)
-    message.add(texts.shuffle.first)
+    text = Time.now.strftime("%H:%M ") + texts[rand(texts.length)]
+    message.add(text)
     message
   end
 
