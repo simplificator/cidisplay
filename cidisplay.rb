@@ -5,7 +5,6 @@ require 'rdis'
 require 'serialport'
 
 class CiDisplay
-  COLORS = {'red' => 1, 'red_anime' => 2, 'blue' => 3, 'blue_anime' => 4, 'grey' => 5}
 
   def initialize(credentials, device = '/dev/tty.usbserial')
     credentials.each do |key, value|
@@ -20,11 +19,9 @@ class CiDisplay
     board = open_board(@device)
     if jobs.empty?
       board.deliver(ok_message)
-      sleep 10
     else
       jobs.each do |job|
         board.deliver(failure_message(job))
-        sleep 5
       end
     end
   end
@@ -33,10 +30,10 @@ class CiDisplay
 
   def ok_message
     message = Rdis::Message.new(:method => Rdis::DisplayMethodElement::LEVEL_3_NORMAL,
-                                :leading => Rdis::LeadingElement::HOLD,
+                                :leading => Rdis::LeadingElement::CURTAIN_UP,
                                 :lagging => Rdis::LaggingElement::HOLD)
     message.add(Rdis::ColorElement::GREEN)
-    message.add("ALL SYSTEMS GO")
+    message.add("HOORAY")
     message
   end
 
