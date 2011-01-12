@@ -35,7 +35,7 @@ class CiDisplay
                                 :leading => Rdis::LeadingElement::CURTAIN_UP,
                                 :lagging => Rdis::LaggingElement::HOLD)
     message.add(Rdis::ColorElement::GREEN)
-    message.add(text.shuffle.first)
+    message.add(texts.shuffle.first)
     message
   end
 
