@@ -1,5 +1,4 @@
 require 'rubygems'
-require 'daemons'
 require 'cidisplay'
 
 device = ARGV[1] || '/dev/tty.usbserial'

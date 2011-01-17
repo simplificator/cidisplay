@@ -1,15 +1,14 @@
 require 'rubygems'
 require 'yaml'
-require 'hudson-remote-api'
 require 'rdis'
 require 'serialport'
+require 'json'
+require 'net/http'
 
 class CiDisplay
 
   def initialize(credentials, device = '/dev/tty.usbserial')
-    credentials.each do |key, value|
-      Hudson[key.to_sym] = value
-    end
+    @credentials = credentials
     @device = device
   end
 
@@ -45,14 +44,18 @@ class CiDisplay
                                 :leading => Rdis::LeadingElement::CURTAIN_UP,
                                 :lagging => Rdis::LaggingElement::HOLD)
     message.add(Rdis::ColorElement::RED)
-    message.add(job.name.upcase)
+    message.add(job['name'].upcase)
     message
   end
   def fetch_failing_jobs
-    jobs = Hudson::Job.list.map do |name|
-      Hudson::Job.new(name)
-    end.select do |job|
-      job.color != 'blue' && job.color != 'blue_anime'
+    Net::HTTP.start(host) do |http|
+      req = Net::HTTP::Get.new(path)
+      req.basic_auth user, password
+      response = http.request(req)
+      data = JSON.parse(response.body)
+      data['jobs'].select do |job|
+        job['color'] != 'blue' && job['color'] != 'blue-anime'
+      end
     end
   end
 
@@ -60,6 +63,29 @@ class CiDisplay
     board = Rdis::Board.new(device)
     board.open
     board
+  end
+
+
+  private
+
+  def user
+    @credentials['user']
+  end
+
+  def password
+    @credentials['password']
+  end
+
+  def host
+    @credentials['host']
+  end
+
+  def view
+    @credentials['view'] || 'All'
+  end
+
+  def path
+    "/view/#{view}/api/json"
   end
 
 end
