@@ -1,3 +1,4 @@
-url: 'http://ci.foobar.com'
-user: 'username'
-password: 'passwort'
+view: 'All'
+host: 'ci.foobar.com'
+user: 'api'
+password: 'foobar'
