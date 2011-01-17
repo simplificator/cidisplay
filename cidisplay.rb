@@ -53,7 +53,7 @@ class CiDisplay
       response = http.request(req)
       data = JSON.parse(response.body)
       data['jobs'].select do |job|
-        job['color'] != 'blue' && job['color'] != 'blue-anime'
+        job['color'] != 'blue' && job['color'] != 'blue_anime'
       end
     end
   end
