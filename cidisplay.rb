@@ -28,7 +28,7 @@ class CiDisplay
   private
 
   def ok_message
-    texts = ['HOORAY', 'WORKING', 'RUNNING', 'READY!', 'SOLID!', 'NICE!', '' ]
+    texts = ['HOORAY', 'WORKING', 'RUNNING', 'READY!', 'SOLID!', 'NICE!', 'TATAAA', 'GOOD', 'WOW', 'STABLE', '--OK--', 'PERFECT']
     message = Rdis::Message.new(:method => Rdis::DisplayMethodElement::LEVEL_3_NORMAL,
                                 :leading => Rdis::LeadingElement::CURTAIN_UP,
                                 :lagging => Rdis::LaggingElement::HOLD)
