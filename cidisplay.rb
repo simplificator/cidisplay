@@ -47,7 +47,7 @@ class CiDisplay
     text = Time.now.strftime("%H:%M ") + FAILURE_TEXTS[Time.now.min % FAILURE_TEXTS.length]
     message.add(text)
 
-    text = jobs.map {|item| job['name'].upcase }.join(" | ")
+    text = jobs.map {|job| job['name'].upcase }.join(" | ")
     message.add(text)
   end
 
