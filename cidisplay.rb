@@ -9,7 +9,6 @@ class CiDisplay
   SUCCESS_TEXTS = [ 'YESSS', 'THANKS', 'GREAT', 'YOU ROCK', 'AGAIN', 'NIFTY', 'GREEN',
                     'WARP 9', 'SUPERB', 'HOORAY', 'WORKING', 'RUNNING', 'READY!',
                     'SOLID!', 'NICE!', 'TATAAA', 'GOOD', 'WOW', 'STABLE', '--OK--', 'PERFECT']
-  FAILURE_TEXTS = ['FAILING:', 'OH NO:', 'BOOOM:', 'ERROR:', 'RED:', 'HOUSTON WE HAVE A SITUATION:']
 
   def initialize(credentials, device = '/dev/tty.usbserial')
     @credentials = credentials
@@ -44,11 +43,10 @@ class CiDisplay
                                 :leading => Rdis::LeadingElement::SCROLL_LEFT,
                                 :lagging => Rdis::LaggingElement::SCROLL_LEFT)
     message.add(Rdis::ColorElement::RED)
-    text = Time.now.strftime("%H:%M ") + FAILURE_TEXTS[Time.now.min % FAILURE_TEXTS.length]
-    message.add(text)
 
     text = jobs.map {|job| job['name'].upcase }.join(" | ")
     message.add(text)
+    message
   end
 
   def fetch_failing_jobs
