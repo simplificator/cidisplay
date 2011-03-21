@@ -6,7 +6,7 @@ require 'json'
 require 'net/http'
 
 class CiDisplay
-  SUCCESS_TEXTS = [ 'YESSS', 'THANKS', 'GREAT', 'YOU ROCK', 'AGAIN', 'NIFTY', 'GREEN'
+  SUCCESS_TEXTS = [ 'YESSS', 'THANKS', 'GREAT', 'YOU ROCK', 'AGAIN', 'NIFTY', 'GREEN',
                     'WARP 9', 'SUPERB', 'HOORAY', 'WORKING', 'RUNNING', 'READY!',
                     'SOLID!', 'NICE!', 'TATAAA', 'GOOD', 'WOW', 'STABLE', '--OK--', 'PERFECT']
   FAILURE_TEXTS = ['FAILING:', 'OH NO:', 'BOOOM:', 'ERROR:', 'RED:', 'HOUSTON WE HAVE A SITUATION:']
