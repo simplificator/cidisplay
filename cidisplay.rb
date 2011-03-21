@@ -6,6 +6,10 @@ require 'json'
 require 'net/http'
 
 class CiDisplay
+  SUCCESS_TEXTS = [ 'YESSS', 'THANKS', 'GREAT', 'YOU ROCK', 'AGAIN', 'NIFTY', 'GREEN'
+                    'WARP 9', 'SUPERB', 'HOORAY', 'WORKING', 'RUNNING', 'READY!',
+                    'SOLID!', 'NICE!', 'TATAAA', 'GOOD', 'WOW', 'STABLE', '--OK--', 'PERFECT']
+  FAILURE_TEXTS = ['FAILING:', 'OH NO:', 'BOOOM:', 'ERROR:', 'RED:', 'HOUSTON WE HAVE A SITUATION:']
 
   def initialize(credentials, device = '/dev/tty.usbserial')
     @credentials = credentials
@@ -19,33 +23,34 @@ class CiDisplay
     if jobs.empty?
       board.deliver(ok_message)
     else
-      jobs.each do |job|
-        board.deliver(failure_message(job))
-      end
+      board.deliver(failure_message(jobs))
     end
   end
 
   private
 
   def ok_message
-    texts = ['HOORAY', 'WORKING', 'RUNNING', 'READY!', 'SOLID!', 'NICE!', 'TATAAA', 'GOOD', 'WOW', 'STABLE', '--OK--', 'PERFECT']
     message = Rdis::Message.new(:method => Rdis::DisplayMethodElement::LEVEL_3_NORMAL,
                                 :leading => Rdis::LeadingElement::CURTAIN_UP,
                                 :lagging => Rdis::LaggingElement::HOLD)
     message.add(Rdis::ColorElement::GREEN)
-    text = Time.now.strftime("%H:%M ") + texts[Time.now.min % texts.length]
+    text = Time.now.strftime("%H:%M ") + SUCCESS_TEXTS[Time.now.min % SUCCESS_TEXTS.length]
     message.add(text)
     message
   end
 
-  def failure_message(job)
+  def failure_message(jobs)
     message = Rdis::Message.new(:method => Rdis::DisplayMethodElement::LEVEL_3_NORMAL,
-                                :leading => Rdis::LeadingElement::CURTAIN_UP,
-                                :lagging => Rdis::LaggingElement::HOLD)
+                                :leading => Rdis::LeadingElement::SCROLL_LEFT,
+                                :lagging => Rdis::LaggingElement::SCROLL_LEFT)
     message.add(Rdis::ColorElement::RED)
-    message.add(job['name'].upcase)
-    message
+    text = Time.now.strftime("%H:%M ") + FAILURE_TEXTS[Time.now.min % FAILURE_TEXTS.length]
+    message.add(text)
+
+    text = jobs.map {|item| job['name'].upcase }.join(" | ")
+    message.add(text)
   end
+
   def fetch_failing_jobs
     Net::HTTP.start(host) do |http|
       req = Net::HTTP::Get.new(path)
