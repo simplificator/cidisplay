@@ -3,15 +3,18 @@ require 'yaml'
 require 'rdis'
 require 'serialport'
 require 'json'
-require 'net/http'
 
-class CiDisplay
+require 'net/http'
+require 'net/https'
+
+
+
+class CI
   SUCCESS_TEXTS = [ 'YESSS', 'THANKS', 'GREAT', 'YOU ROCK', 'AGAIN', 'NIFTY', 'GREEN',
                     'WARP 9', 'SUPERB', 'HOORAY', 'WORKING', 'RUNNING', 'READY!',
                     'SOLID!', 'NICE!', 'TATAAA', 'GOOD', 'WOW', 'STABLE', '--OK--', 'PERFECT']
 
-  def initialize(credentials, device = '/dev/tty.usbserial')
-    @credentials = credentials
+  def initialize(device = '/dev/tty.usbserial')
     @device = device
   end
 
@@ -26,7 +29,6 @@ class CiDisplay
     end
   end
 
-  private
 
   def ok_message
     message = Rdis::Message.new(:method => Rdis::DisplayMethodElement::LEVEL_3_NORMAL,
@@ -49,45 +51,10 @@ class CiDisplay
     message
   end
 
-  def fetch_failing_jobs
-    Net::HTTP.start(host) do |http|
-      req = Net::HTTP::Get.new(path)
-      req.basic_auth user, password
-      response = http.request(req)
-      data = JSON.parse(response.body)
-      data['jobs'].select do |job|
-        job['color'] != 'blue' && job['color'] != 'blue_anime' && job['color'] != 'disabled'
-      end
-    end
-  end
-
   def open_board(device)
     board = Rdis::Board.new(device)
     board.open
     board
-  end
-
-
-  private
-
-  def user
-    @credentials['user']
-  end
-
-  def password
-    @credentials['password']
-  end
-
-  def host
-    @credentials['host']
-  end
-
-  def view
-    @credentials['view'] || 'All'
-  end
-
-  def path
-    "/view/#{view}/api/json"
   end
 
 end
