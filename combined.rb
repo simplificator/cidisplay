@@ -1,7 +1,7 @@
 require File.dirname(__FILE__) + '/ci'
 
 class Combined < CI
-  def initialize(credentials)
+  def initialize()
     @cis = []
   end
 

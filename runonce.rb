@@ -15,5 +15,9 @@ devices_string = ARGV[0] || '/dev/tty.usbserial'
 puts "Using Device #{devices_string}"
 jobs = combined.fetch_failing_jobs
 devices_string.split(',').each do |device|
-  combined.publish(jobs, device)
+  begin
+    combined.publish(jobs, device)
+  rescue
+    puts "Probably no such device: #{device}"
+  end
 end
