@@ -12,22 +12,18 @@ require 'net/https'
 class CI
   SUCCESS_TEXTS = [ 'YESSS', 'THANKS', 'GREAT', 'YOU ROCK', 'AGAIN', 'NIFTY', 'GREEN',
                     'WARP 9', 'SUPERB', 'HOORAY', 'WORKING', 'RUNNING', 'READY!',
-                    'SOLID!', 'NICE!', 'TATAAA', 'GOOD', 'WOW', 'STABLE', '--OK--', 'PERFECT']
-
-  def initialize(device = '/dev/tty.usbserial')
-    @device = device
-  end
+                    'SOLID!', 'NICE!', 'TATAAA', 'GOOD', 'WOW', 'STABLE', '--OK--', 'PERFECT', '▇ ▅ █ ▅ ▇ ▂ ▃ ▁ ▁ ']
 
 
-  def publish
-    jobs = fetch_failing_jobs
-    board = open_board(@device)
+  def publish(jobs, device = '/dev/tty.usbserial')
+    board = open_board(device)
     if jobs.empty?
       board.deliver(ok_message)
     else
       board.deliver(failure_message(jobs))
     end
   end
+
 
 
   def ok_message

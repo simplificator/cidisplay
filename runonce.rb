@@ -7,10 +7,13 @@ require File.dirname(__FILE__) + '/combined'
 
 
 
-device = ARGV[0] || '/dev/tty.usbserial'
-puts "Using Device #{device}"
 
-combined = Combined.new(device)
-combined << Hudson.new(YAML.load_file(File.dirname(__FILE__) + '/hudson.yml'), device)
-combined << Semaphore.new("77Uce5itpFox641nxXxE", device)
-combined.publish
+combined = Combined.new()
+combined << Hudson.new(YAML.load_file(File.dirname(__FILE__) + '/hudson.yml'))
+combined << Semaphore.new("77Uce5itpFox641nxXxE")
+devices_string = ARGV[0] || '/dev/tty.usbserial'
+puts "Using Device #{devices_string}"
+jobs = combined.fetch_failing_jobs
+devices_string.split(',').each do |device|
+  combined.publish(jobs, device)
+end

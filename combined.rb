@@ -1,9 +1,8 @@
 require File.dirname(__FILE__) + '/ci'
 
 class Combined < CI
-  def initialize(credentials, device = '/dev/tty.usbserial')
+  def initialize(credentials)
     @cis = []
-    super(device)
   end
 
   def <<(ci)

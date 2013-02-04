@@ -1,19 +1,8 @@
 require File.dirname(__FILE__) + '/ci'
 class Semaphore < CI
 
-  def initialize(credentials, device = '/dev/tty.usbserial')
+  def initialize(credentials)
     @credentials = credentials
-    super(device)
-  end
-
-  def publish
-    jobs = fetch_failing_jobs
-    board = open_board(@device)
-    if jobs.empty?
-      board.deliver(ok_message)
-    else
-      board.deliver(failure_message(jobs))
-    end
   end
 
   def fetch_failing_jobs

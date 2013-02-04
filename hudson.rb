@@ -2,9 +2,8 @@ require File.dirname(__FILE__) + '/ci'
 
 class Hudson < CI
 
-  def initialize(credentials, device = '/dev/tty.usbserial')
+  def initialize(credentials)
     @credentials = credentials
-    super(device)
   end
 
 
